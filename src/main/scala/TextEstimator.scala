@@ -28,9 +28,16 @@ case class WordDatabase(
             Some(lemmas(lemma))
         }
     }
-
-    def estimateAcademical(str:String):(Double, List[(String, Double)]) = {
-        val foo = str.split("[,.\"`;:./&\n –-]").foldLeft((0.0, 0, List.empty[(String, Double)]))((old, e) => 
+    /**
+      * This method creates a estimation of the academicalness of a text with statistical information.
+      * The text is being split in words with the regex ``[,.\"`;:./&\n –-]``.
+      * @param str the text
+      * @return a tuple of the academical rating, the actually included words with their individual ratings, 
+      * the number of words this text contained
+      */
+    def estimateAcademical(str:String):(Double, List[(String, Double)], Int) = {
+        val ww = str.split("[,.\"`;:./&\n –-]")
+        val foo = ww.foldLeft((0.0, 0, List.empty[(String, Double)]))((old, e) => 
             if(e.contains("'") && e.split("'").size == 2){
                 val parts = e.split("'")
                 val w1 = lookUpWord(parts(0))
@@ -50,7 +57,7 @@ case class WordDatabase(
                     fl)
             }
         )
-        (foo._1/foo._2, foo._3)
+        (foo._1/foo._2, foo._3, ww.size)
     }
 }
 object TextEstimator{

@@ -66,7 +66,7 @@ class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
         (size.width, size.height)
     }
     setSize(1100, 750)
-    setMinimumSize(new Dimension(600, 300))
+    setMinimumSize(new Dimension(750, 300))
     setLocationRelativeTo(null); 
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
     //i know, i should rather use a layout but i am too lazy
@@ -77,6 +77,16 @@ class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
     label1.setVerticalAlignment(SwingConstants.CENTER)
     topPanel.add(label1)
     
+    val rightPanel = new JPanel(new GridLayout(2, 2))
+    rightPanel.setBackground(new Color(210, 220, 230))
+    val label_score = new JLabel("academical score: ")
+    rightPanel.add(label_score)
+    val label_words = new JLabel("found words: ")
+    rightPanel.add(label_words)
+    val label_est = new JLabel("estimation: ")
+    rightPanel.add(label_est)
+    val label_time = new JLabel("computation time: ")
+    rightPanel.add(label_time)
     val inputText = new JPanel(new FlowLayout(FlowLayout.LEFT))
     inputText.add(new JLabel("input text:"))
     inputText.setBounds(10, 45, 200, 20)
@@ -97,6 +107,8 @@ class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
         btn.setBounds(getWidth()/2 - 93, getHeight() - 75, 100, 30)
         acd.setBounds(150, 7, getWidth()/2 - 150, 30)
         acd.repaint()
+        rightPanel.setBounds(getWidth()/2 + 20, 7, getWidth()/2 -40, 100)
+        rightPanel.repaint()
     }
     placeObjects()
     addComponentListener(new ComponentAdapter(){
@@ -105,6 +117,7 @@ class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
     add(acd)
     add(inputText)
     add(topPanel)
+    add(rightPanel)
     add(area)
     add(btn)
 
@@ -112,9 +125,23 @@ class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
       override def actionPerformed(x$1: ActionEvent): Unit ={ 
         btn.setEnabled(false)
         btn.repaint()
+        val start = System.currentTimeMillis()
         val sol = db.estimateAcademical(area.getText())
+        val end = System.currentTimeMillis()
         acd.value = sol._1
         acd.repaint()
+        import java.text.DecimalFormat;
+        val form = new DecimalFormat("#,##0.00")
+        label_score.setText("academical score: " + form.format(sol._1))
+        label_words.setText("found words: " + sol._2.size + "/" + sol._3)
+        label_time.setText("computation time: " + (end-start) + "ms")
+        label_est.setText("estimation: " + (
+            if(sol._1 > 1.3) "very academical"
+            else if(sol._1 > 1.125) "academical"
+            else if(sol._1 > 0.875) "neutral"
+            else if(sol._1 > 0.7) "unacademical"
+            else "very unacademical"
+        ))
         btn.setEnabled(true)
         btn.repaint()
       }
