@@ -7,7 +7,7 @@ object WordClasses extends Enumeration {
 }
 /**
   * Consists of the lemmas and individual word forms which are connected to a lemma.
-  * The distribution of the lemma is given in occurances per million words in academic texts divided by overall occurances per million words.
+  * The distribution of the lemma is given in occurrence per million words in academic texts divided by overall occurrence per million words.
   * @param lemmas       Mapping from Lemma -> (acadPM/per million, WordClass)
   * @param wordForms    Mapping from Word form -> Lemma
   */
