@@ -20,28 +20,37 @@ case class WordDatabase(
      * @return a new consistent word database
      */
     def reduceToMatching():WordDatabase = WordDatabase(lemmas, wordForms.filter(pred => lemmas.contains(pred._2)))
-    def lookUpWord(str:String):Option[(Double, WordClasses.WordClass)] = 
-        if(!lemmas.contains(str) && !wordForms.contains(str)) None
+    def lookUpWord(str:String):Option[(Double, WordClasses.WordClass)] = {
+        val s = str.toLowerCase()
+        if(!lemmas.contains(s) && !wordForms.contains(s)) None
         else{
-            val lemma = if(lemmas.contains(str)) str else wordForms(str)
+            val lemma = if(lemmas.contains(s)) s else wordForms(s)
             Some(lemmas(lemma))
         }
+    }
 
-    def estimateAcademical(str:String):Double = {
-        val foo = str.split("[,.\"`;:./&\n –-]").foldLeft((0.0, 0))((old, e) => 
-            if(e.contains("'")){
+    def estimateAcademical(str:String):(Double, List[(String, Double)]) = {
+        val foo = str.split("[,.\"`;:./&\n –-]").foldLeft((0.0, 0, List.empty[(String, Double)]))((old, e) => 
+            if(e.contains("'") && e.split("'").size == 2){
                 val parts = e.split("'")
                 val w1 = lookUpWord(parts(0))
                 val w2 = lookUpWord("'" + parts(1))
+                var fl = old._3
+                if(!w1.isEmpty) fl = (parts(0), w1.get._1) :: fl
+                if(!w2.isEmpty) fl = ("'" + parts(1), w2.get._1) :: fl
                 (old._1 + (if(w1.isEmpty) 0.0 else w1.get._1) + (if(w2.isEmpty) 0.0 else w2.get._1),
-                    old._2 + (if(w1.isEmpty) 0 else 1) + (if(w2.isEmpty) 0 else 1))
+                    old._2 + (if(w1.isEmpty) 0 else 1) + (if(w2.isEmpty) 0 else 1),
+                    fl)
             }else{
                 val w = lookUpWord(e)
+                var fl = old._3
+                if(!w.isEmpty) fl = (e, w.get._1) :: fl
                 (old._1 + (if(w.isEmpty) 0.0 else w.get._1),
-                    old._2 + (if(w.isEmpty) 0 else 1))
+                    old._2 + (if(w.isEmpty) 0 else 1),
+                    fl)
             }
         )
-        foo._1/foo._2
+        (foo._1/foo._2, foo._3)
     }
 }
 object TextEstimator{
