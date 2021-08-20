@@ -6,8 +6,9 @@ object WordClasses extends Enumeration {
     val NOUN, VERB, ADJ, ADV, PP, PRO, CON, INTER, NOTHING = Value
 }
 /**
-  * Consists of the lemmas and individual word forms which are connected to a lemma
-  * @param lemmas       Mapping from Lemma -> (acadPM, WordClass)
+  * Consists of the lemmas and individual word forms which are connected to a lemma.
+  * The distribution of the lemma is given in occurances per million words in academic texts divided by overall occurances per million words.
+  * @param lemmas       Mapping from Lemma -> (acadPM/per million, WordClass)
   * @param wordForms    Mapping from Word form -> Lemma
   */
 case class WordDatabase(
@@ -19,9 +20,28 @@ case class WordDatabase(
      * @return a new consistent word database
      */
     def reduceToMatching():WordDatabase = WordDatabase(lemmas, wordForms.filter(pred => lemmas.contains(pred._2)))
+    def lookUpWord(str:String):Option[(Double, WordClasses.WordClass)] = 
+        if(!lemmas.contains(str) && !wordForms.contains(str)) None
+        else{
+            val lemma = if(lemmas.contains(str)) str else wordForms(str)
+            Some(lemmas(lemma))
+        }
 
     def estimateAcademical(str:String):Double = {
-        0.5
+        val foo = str.split("[,.\"`;:./&\n –-]").foldLeft((0.0, 0))((old, e) => 
+            if(e.contains("'")){
+                val parts = e.split("'")
+                val w1 = lookUpWord(parts(0))
+                val w2 = lookUpWord("'" + parts(1))
+                (old._1 + (if(w1.isEmpty) 0.0 else w1.get._1) + (if(w2.isEmpty) 0.0 else w2.get._1),
+                    old._2 + (if(w1.isEmpty) 0 else 1) + (if(w2.isEmpty) 0 else 1))
+            }else{
+                val w = lookUpWord(e)
+                (old._1 + (if(w.isEmpty) 0.0 else w.get._1),
+                    old._2 + (if(w.isEmpty) 0 else 1))
+            }
+        )
+        foo._1/foo._2
     }
 }
 object TextEstimator{
@@ -40,10 +60,10 @@ object TextEstimator{
                     val parts = line.split(";")
                     val lemma = parts(1)
                     val typec = parts(2).charAt(0)
-                   
+                    val permi = (parts(4).replaceAll(",", ".")).toDouble
                     val acapm = (parts(24).replaceAll(",", ".")).toDouble
                     import WordClasses._
-                    lemma -> ((acapm, (typec match {
+                    lemma -> ((acapm/permi, (typec match {
                         case 'n' => NOUN
                         case 'v' => VERB
                         case 'j' => ADJ
