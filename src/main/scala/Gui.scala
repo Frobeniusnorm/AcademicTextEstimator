@@ -29,6 +29,10 @@ import java.awt.Graphics2D
 import javax.swing.SwingConstants
 import java.awt.event.ActionListener
 import java.awt.event.ActionEvent
+import javax.swing.JCheckBox
+import javax.swing.JList
+import javax.swing.JScrollPane
+import javax.swing.DefaultListModel
 class RoundedBorder(radius:Int) extends Border {
     def getBorderInsets(c:Component):Insets = new Insets(this.radius+1, this.radius+1, this.radius+2, this.radius);
     def isBorderOpaque() = true
@@ -69,7 +73,7 @@ class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
     setMinimumSize(new Dimension(750, 300))
     setLocationRelativeTo(null); 
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
-    //i know, i should rather use a layout but i am too lazy
+    
     setLayout(null)
     val topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT))
     topPanel.setBounds(10, 10, 130, 30)
@@ -79,6 +83,56 @@ class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
     
     val rightPanel = new JPanel(new GridLayout(2, 2))
     rightPanel.setBackground(new Color(210, 220, 230))
+    rightPanel.setBorder(new RoundedBorder(10))
+
+    val optPanel = new JPanel()
+    optPanel.setBackground(new Color(230, 220, 230))
+    optPanel.setBorder(new RoundedBorder(10))
+    optPanel.setLayout(null)
+
+    val subpanel1 = new JPanel(new FlowLayout(FlowLayout.LEFT))
+    subpanel1.add(new JLabel("wordforms to investigate:"))
+    subpanel1.setBounds(0,0, 195, 20)
+    subpanel1.setOpaque(false)
+
+    val optCont = new JPanel(new FlowLayout(FlowLayout.LEFT))
+    optCont.setOpaque(false)
+    val check_noun = new JCheckBox("nouns", true)
+    check_noun.setOpaque(false)
+    check_noun.setFocusable(false)
+    val check_verb = new JCheckBox("verbs", true)
+    check_verb.setOpaque(false)
+    check_verb.setFocusable(false)
+    val check_adj = new JCheckBox("adjectives", true)
+    check_adj.setOpaque(false)
+    check_adj.setFocusable(false)
+    val check_adv = new JCheckBox("adverbs", true)
+    check_adv.setOpaque(false)
+    check_adv.setFocusable(false)
+    val check_pp = new JCheckBox("prepositions", true)
+    check_pp.setOpaque(false)
+    check_pp.setFocusable(false)
+    val check_pro = new JCheckBox("pronouns", true)
+    check_pro.setOpaque(false)
+    check_pro.setFocusable(false)
+    val check_con = new JCheckBox("conjunctions", true)
+    check_con.setOpaque(false)
+    check_con.setFocusable(false)
+    val check_int = new JCheckBox("interjections", true)
+    check_int.setOpaque(false)
+    check_int.setFocusable(false)
+    optCont.add(check_noun)
+    optCont.add(check_verb)
+    optCont.add(check_adj)
+    optCont.add(check_adv)
+    optCont.add(check_pp)
+    optCont.add(check_pro)
+    optCont.add(check_con)
+    optCont.add(check_int)
+
+    optPanel.add(subpanel1)    
+    optPanel.add(optCont)
+
     val label_score = new JLabel("academical score: ")
     rightPanel.add(label_score)
     val label_words = new JLabel("found words: ")
@@ -90,6 +144,13 @@ class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
     val inputText = new JPanel(new FlowLayout(FlowLayout.LEFT))
     inputText.add(new JLabel("input text:"))
     inputText.setBounds(10, 45, 200, 20)
+    
+    val wordlistTitle = new JPanel()
+    wordlistTitle.add(new JLabel("Least academic words:"))
+    val listModel = new DefaultListModel[String]();
+    val wordlist = new JList(listModel)
+    val scrollPane = new JScrollPane(wordlist)
+    wordlist.setEnabled(false)
 
     val area = new JTextArea()
     area.setBackground(new Color(250, 250, 250))
@@ -101,18 +162,34 @@ class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
     btn.setCursor(new Cursor(Cursor.HAND_CURSOR))
 
     val acd = new AcademicalOMeter()
-    
+    //i know, i should rather use a layout but i am too lazy
     def placeObjects(){
         area.setBounds(10, 70, getWidth()/2, getHeight() - 150)
         btn.setBounds(getWidth()/2 - 93, getHeight() - 75, 100, 30)
         acd.setBounds(150, 7, getWidth()/2 - 150, 30)
         acd.repaint()
-        rightPanel.setBounds(getWidth()/2 + 20, 7, getWidth()/2 -40, 100)
+        rightPanel.setBounds(getWidth()/2 + 20, 7, getWidth()/2 -40, 70)
         rightPanel.repaint()
+        optPanel.setBounds(getWidth()/2 + 20, 90, getWidth()/2 -40, 90)
+        optCont.setBounds(5, 22, getWidth()/2 -50, 70)
+        optCont.repaint()
+        if(optCont.getWidth() <= 450){
+            optPanel.setBounds(getWidth()/2 + 20, 90, getWidth()/2 -40, 110)
+            optCont.setBounds(5, 22, getWidth()/2 -50, 85)
+        }
+        optPanel.repaint()
+        wordlistTitle.setBounds(optPanel.getLocation().x, optPanel.getLocation().y + optPanel.getHeight() + 10, 160, 20)
+        scrollPane.setLocation(optPanel.getLocation().x, wordlistTitle.getLocation().y + wordlistTitle.getHeight() + 10)
+        scrollPane.setSize(250, getHeight() - scrollPane.getLocation().y - 79)
+        scrollPane.repaint()
+        repaint()
     }
     placeObjects()
     addComponentListener(new ComponentAdapter(){
         override def componentResized(e:ComponentEvent):Unit = placeObjects()
+    })
+    addWindowStateListener(new WindowStateListener(){
+      override def windowStateChanged(x$1: WindowEvent): Unit = placeObjects()
     })
     add(acd)
     add(inputText)
@@ -120,6 +197,9 @@ class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
     add(rightPanel)
     add(area)
     add(btn)
+    add(optPanel)
+    add(wordlistTitle)
+    add(scrollPane)
 
     btn.addActionListener(new ActionListener(){
       override def actionPerformed(x$1: ActionEvent): Unit ={ 
@@ -130,8 +210,11 @@ class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
         val end = System.currentTimeMillis()
         acd.value = sol._1
         acd.repaint()
+        listModel.clear()
+        import collection.JavaConverters._
         import java.text.DecimalFormat;
         val form = new DecimalFormat("#,##0.00")
+        listModel.addAll(sol._2.distinct.sortWith((a, b) => a._2 <= b._2).map(s => s._1 + " (" + form.format(s._2) + ")").asJava)
         label_score.setText("academical score: " + form.format(sol._1))
         label_words.setText("found words: " + sol._2.size + "/" + sol._3)
         label_time.setText("computation time: " + (end-start) + "ms")
@@ -142,6 +225,7 @@ class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
             else if(sol._1 > 0.7) "unacademical"
             else "very unacademical"
         ))
+
         btn.setEnabled(true)
         btn.repaint()
       }
