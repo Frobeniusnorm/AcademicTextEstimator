@@ -33,6 +33,7 @@ import javax.swing.JCheckBox
 import javax.swing.JList
 import javax.swing.JScrollPane
 import javax.swing.DefaultListModel
+import scala.collection.immutable.HashSet
 class RoundedBorder(radius:Int) extends Border {
     def getBorderInsets(c:Component):Insets = new Insets(this.radius+1, this.radius+1, this.radius+2, this.radius);
     def isBorderOpaque() = true
@@ -70,7 +71,7 @@ class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
         (size.width, size.height)
     }
     setSize(1100, 750)
-    setMinimumSize(new Dimension(750, 300))
+    setMinimumSize(new Dimension(800, 400))
     setLocationRelativeTo(null); 
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
     
@@ -149,11 +150,12 @@ class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
     wordlistTitle.add(new JLabel("Least academic words:"))
     val listModel = new DefaultListModel[String]();
     val wordlist = new JList(listModel)
-    val scrollPane = new JScrollPane(wordlist)
+    val scrollPane1 = new JScrollPane(wordlist)
     wordlist.setEnabled(false)
-
+   
     val area = new JTextArea()
     area.setBackground(new Color(250, 250, 250))
+    val scrollPane2 = new JScrollPane(area)
 
     val btn = new JButton("compute")
     btn.setFocusable(false)
@@ -164,7 +166,7 @@ class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
     val acd = new AcademicalOMeter()
     //i know, i should rather use a layout but i am too lazy
     def placeObjects(){
-        area.setBounds(10, 70, getWidth()/2, getHeight() - 150)
+        scrollPane2.setBounds(10, 70, getWidth()/2, getHeight() - 150)
         btn.setBounds(getWidth()/2 - 93, getHeight() - 75, 100, 30)
         acd.setBounds(150, 7, getWidth()/2 - 150, 30)
         acd.repaint()
@@ -179,34 +181,41 @@ class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
         }
         optPanel.repaint()
         wordlistTitle.setBounds(optPanel.getLocation().x, optPanel.getLocation().y + optPanel.getHeight() + 10, 160, 20)
-        scrollPane.setLocation(optPanel.getLocation().x, wordlistTitle.getLocation().y + wordlistTitle.getHeight() + 10)
-        scrollPane.setSize(250, getHeight() - scrollPane.getLocation().y - 79)
-        scrollPane.repaint()
+        scrollPane1.setLocation(optPanel.getLocation().x, wordlistTitle.getLocation().y + wordlistTitle.getHeight() + 10)
+        scrollPane1.setSize(250, getHeight() - scrollPane1.getLocation().y - 79)
+        scrollPane1.repaint()
         repaint()
     }
     placeObjects()
     addComponentListener(new ComponentAdapter(){
         override def componentResized(e:ComponentEvent):Unit = placeObjects()
     })
-    addWindowStateListener(new WindowStateListener(){
-      override def windowStateChanged(x$1: WindowEvent): Unit = placeObjects()
-    })
     add(acd)
     add(inputText)
     add(topPanel)
     add(rightPanel)
-    add(area)
+    add(scrollPane2)
     add(btn)
     add(optPanel)
     add(wordlistTitle)
-    add(scrollPane)
+    add(scrollPane1)
 
     btn.addActionListener(new ActionListener(){
       override def actionPerformed(x$1: ActionEvent): Unit ={ 
         btn.setEnabled(false)
         btn.repaint()
         val start = System.currentTimeMillis()
-        val sol = db.estimateAcademical(area.getText())
+        import WordClasses._
+        var filt = HashSet.empty[WordClass]
+        if(check_noun.isSelected()) filt = filt + NOUN
+        if(check_verb.isSelected()) filt = filt + VERB
+        if(check_adj.isSelected()) filt = filt + ADJ
+        if(check_adv.isSelected()) filt = filt + ADV
+        if(check_con.isSelected()) filt = filt + CON
+        if(check_int.isSelected()) filt = filt + INTER
+        if(check_pro.isSelected()) filt = filt + PRO
+        if(check_pp.isSelected()) filt = filt + PP
+        val sol = db.estimateAcademical(area.getText(), filt)
         val end = System.currentTimeMillis()
         acd.value = sol._1
         acd.repaint()
@@ -214,7 +223,7 @@ class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
         import collection.JavaConverters._
         import java.text.DecimalFormat;
         val form = new DecimalFormat("#,##0.00")
-        listModel.addAll(sol._2.distinct.sortWith((a, b) => a._2 <= b._2).map(s => s._1 + " (" + form.format(s._2) + ")").asJava)
+        listModel.addAll(sol._2.distinct.sortWith((a, b) => a._2 <= b._2).map(s => s._1 + " (" + form.format(s._2) + ")").toSeq.asJavaCollection)
         label_score.setText("academical score: " + form.format(sol._1))
         label_words.setText("found words: " + sol._2.size + "/" + sol._3)
         label_time.setText("computation time: " + (end-start) + "ms")

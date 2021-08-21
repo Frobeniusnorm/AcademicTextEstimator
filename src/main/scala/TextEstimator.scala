@@ -1,6 +1,7 @@
 import java.io.File
 import scala.io.Source
 import scala.collection.immutable.HashMap
+import scala.collection.immutable.HashSet
 object WordClasses extends Enumeration {
     type WordClass = Value
     val NOUN, VERB, ADJ, ADV, PP, PRO, CON, INTER, NOTHING = Value
@@ -35,29 +36,19 @@ case class WordDatabase(
       * @return a tuple of the academical rating, the actually included words with their individual ratings, 
       * the number of words this text contained
       */
-    def estimateAcademical(str:String):(Double, List[(String, Double)], Int) = {
+    def estimateAcademical(str:String, filt:HashSet[WordClasses.WordClass]):(Double, Array[(String, Double)], Int) = {
         val ww = str.split("[,.\"`;:./&\n –-]")
-        val foo = ww.foldLeft((0.0, 0, List.empty[(String, Double)]))((old, e) => 
-            if(e.contains("'") && e.split("'").size == 2){
-                val parts = e.split("'")
-                val w1 = lookUpWord(parts(0))
-                val w2 = lookUpWord("'" + parts(1))
-                var fl = old._3
-                if(!w1.isEmpty) fl = (parts(0), w1.get._1) :: fl
-                if(!w2.isEmpty) fl = ("'" + parts(1), w2.get._1) :: fl
-                (old._1 + (if(w1.isEmpty) 0.0 else w1.get._1) + (if(w2.isEmpty) 0.0 else w2.get._1),
-                    old._2 + (if(w1.isEmpty) 0 else 1) + (if(w2.isEmpty) 0 else 1),
-                    fl)
-            }else{
-                val w = lookUpWord(e)
-                var fl = old._3
-                if(!w.isEmpty) fl = (e, w.get._1) :: fl
-                (old._1 + (if(w.isEmpty) 0.0 else w.get._1),
-                    old._2 + (if(w.isEmpty) 0 else 1),
-                    fl)
-            }
-        )
-        (foo._1/foo._2, foo._3, ww.size)
+        val wl = ww.flatMap(w => 
+            if(w.contains("'") && w.split("'").size == 2){
+                val parts = w.split("'")
+                List((parts(0), lookUpWord(parts(0))), ("'" + parts(1), lookUpWord("'" + parts(1))))
+            }else List((w, lookUpWord(w)))
+        ).filter(_ match{
+            case (w, None) => false
+            case (w, Some((p, wc))) => filt.contains(wc)
+        }).map(x => (x._1, x._2.get._1))
+        val v = wl.foldLeft(0.0)((x, ol) => ol._2/wl.size + x)
+        (v, wl, ww.size)
     }
 }
 object TextEstimator{
