@@ -37,7 +37,7 @@ case class WordDatabase(
       * the number of words this text contained
       */
     def estimateAcademical(str:String, filt:HashSet[WordClasses.WordClass]):(Double, Array[(String, Double)], Int) = {
-        val ww = str.split("[,.\"`;:./&\n –-]")
+        val ww = str.replaceAll("i.e.", "").split("[,.\"`;:./&\n –-]")
         val wl = ww.flatMap(w => 
             if(w.contains("'") && w.split("'").size == 2){
                 val parts = w.split("'")
@@ -47,8 +47,7 @@ case class WordDatabase(
             case (w, None) => false
             case (w, Some((p, wc))) => filt.contains(wc)
         }).map(x => (x._1, x._2.get._1))
-        val v = wl.foldLeft(0.0)((x, ol) => ol._2/wl.size + x)
-        (v, wl, ww.size)
+        (wl.foldLeft(0.0)((x, ol) => ol._2/wl.size + x), wl, ww.size)
     }
 }
 object TextEstimator{
