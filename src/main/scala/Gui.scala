@@ -64,7 +64,7 @@ class AcademicalOMeter extends JPanel{
         x.drawImage(puffer, 0, 0, getWidth(), getHeight(), this)
     }
 }
-class Gui(db:WordDatabase) extends JFrame("Academical Text Estimator"){
+class Gui(db:WordDatabase) extends JFrame("Academic Text Estimator"){
     
     val (screenwidth, screenheight) = {
         val size = Toolkit.getDefaultToolkit().getScreenSize()

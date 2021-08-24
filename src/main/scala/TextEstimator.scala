@@ -21,6 +21,11 @@ case class WordDatabase(
      * @return a new consistent word database
      */
     def reduceToMatching():WordDatabase = WordDatabase(lemmas, wordForms.filter(pred => lemmas.contains(pred._2)))
+    /**
+     * Looks up a word form and its corresponding lemma in the two tables
+     * @param str a word form or a lemma
+     * @return None if ``str`` is neither a known word form or lemma, or a Tuple with the score and word class of the corresponding lemma
+     */
     def lookUpWord(str:String):Option[(Double, WordClasses.WordClass)] = {
         val s = str.toLowerCase()
         if(!lemmas.contains(s) && !wordForms.contains(s)) None
@@ -37,7 +42,7 @@ case class WordDatabase(
       * the number of words this text contained
       */
     def estimateAcademical(str:String, filt:HashSet[WordClasses.WordClass]):(Double, Array[(String, Double)], Int) = {
-        val ww = str.replaceAll("i.e.", "").split("[,.\"`;:./&\n –-]")
+        val ww = str.replaceAll("i.e.", "").split("[,.\"`;:/&\n –-]")
         val wl = ww.flatMap(w => 
             if(w.contains("'") && w.split("'").size == 2){
                 val parts = w.split("'")
