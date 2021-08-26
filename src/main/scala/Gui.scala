@@ -34,6 +34,8 @@ import javax.swing.JList
 import javax.swing.JScrollPane
 import javax.swing.DefaultListModel
 import scala.collection.immutable.HashSet
+import javax.swing.JToggleButton
+import scala.collection.immutable.HashMap
 class RoundedBorder(radius:Int) extends Border {
     def getBorderInsets(c:Component):Insets = new Insets(this.radius+1, this.radius+1, this.radius+2, this.radius);
     def isBorderOpaque() = true
@@ -64,7 +66,7 @@ class AcademicalOMeter extends JPanel{
         x.drawImage(puffer, 0, 0, getWidth(), getHeight(), this)
     }
 }
-class Gui(db:WordDatabase) extends JFrame("Academic Text Estimator"){
+class Gui(db:WordDatabase, wordclassratings:HashMap[WordClasses.WordClass, Double]) extends JFrame("Academic Text Estimator"){
     
     val (screenwidth, screenheight) = {
         val size = Toolkit.getDefaultToolkit().getScreenSize()
@@ -163,11 +165,18 @@ class Gui(db:WordDatabase) extends JFrame("Academic Text Estimator"){
     btn.setBorder(new RoundedBorder(10))
     btn.setCursor(new Cursor(Cursor.HAND_CURSOR))
 
+    val tgl = new JButton("compute only word classes");
+    tgl.setFocusable(false)
+    tgl.setBackground(new Color(210, 220, 230))
+    tgl.setBorder(new RoundedBorder(10))
+    tgl.setCursor(new Cursor(Cursor.HAND_CURSOR))
+
     val acd = new AcademicalOMeter()
     //i know, i should rather use a layout but i am too lazy
     def placeObjects(){
         scrollPane2.setBounds(10, 70, getWidth()/2, getHeight() - 150)
         btn.setBounds(getWidth()/2 - 93, getHeight() - 75, 100, 30)
+        tgl.setBounds(10, getHeight() - 75, 220, 30)
         acd.setBounds(150, 7, getWidth()/2 - 150, 30)
         acd.repaint()
         rightPanel.setBounds(getWidth()/2 + 20, 7, getWidth()/2 -40, 70)
@@ -182,7 +191,7 @@ class Gui(db:WordDatabase) extends JFrame("Academic Text Estimator"){
         optPanel.repaint()
         wordlistTitle.setBounds(optPanel.getLocation().x, optPanel.getLocation().y + optPanel.getHeight() + 10, 160, 20)
         scrollPane1.setLocation(optPanel.getLocation().x, wordlistTitle.getLocation().y + wordlistTitle.getHeight() + 10)
-        scrollPane1.setSize(250, getHeight() - scrollPane1.getLocation().y - 79)
+        scrollPane1.setSize(250, getHeight() - scrollPane1.getLocation().y - 80)
         scrollPane1.repaint()
         repaint()
     }
@@ -199,6 +208,7 @@ class Gui(db:WordDatabase) extends JFrame("Academic Text Estimator"){
     add(optPanel)
     add(wordlistTitle)
     add(scrollPane1)
+    add(tgl)
 
     btn.addActionListener(new ActionListener(){
       override def actionPerformed(x$1: ActionEvent): Unit ={ 
@@ -237,6 +247,44 @@ class Gui(db:WordDatabase) extends JFrame("Academic Text Estimator"){
 
         btn.setEnabled(true)
         btn.repaint()
+      }
+    })
+    tgl.addActionListener(new ActionListener(){
+      override def actionPerformed(x$1: ActionEvent): Unit ={ 
+        tgl.setEnabled(false)
+        tgl.repaint()
+
+        val start = System.currentTimeMillis()
+        import WordClasses._
+        var filt = HashSet.empty[WordClass]
+        if(check_noun.isSelected()) filt = filt + NOUN
+        if(check_verb.isSelected()) filt = filt + VERB
+        if(check_adj.isSelected()) filt = filt + ADJ
+        if(check_adv.isSelected()) filt = filt + ADV
+        if(check_con.isSelected()) filt = filt + CON
+        if(check_int.isSelected()) filt = filt + INTER
+        if(check_pro.isSelected()) filt = filt + PRO
+        if(check_pp.isSelected()) filt = filt + PP
+        val sol = db.estimateOnlyWordClasses(wordclassratings)(area.getText(), filt)
+
+        val end = System.currentTimeMillis()
+        acd.value = sol._1
+        acd.repaint()
+        import collection.JavaConverters._
+        import java.text.DecimalFormat;
+        val form = new DecimalFormat("#,##0.00")
+        label_score.setText("academical score: " + form.format(sol._1))
+        label_words.setText("found words: " + sol._2 + "/" + sol._3)
+        label_time.setText("computation time: " + (end-start) + "ms")
+        label_est.setText("estimation: " + (
+            if(sol._1 > 1.3) "very academical"
+            else if(sol._1 > 1.125) "academical"
+            else if(sol._1 > 0.875) "neutral"
+            else if(sol._1 > 0.7) "unacademical"
+            else "very unacademical"
+        ))
+        tgl.setEnabled(true)
+        tgl.repaint()
       }
     })
     setVisible(true)

@@ -54,6 +54,22 @@ case class WordDatabase(
         }).map(x => (x._1, x._2.get._1))
         (wl.foldLeft(0.0)((x, ol) => ol._2/wl.size + x), wl, ww.size)
     }
+    def estimateOnlyWordClasses(wcr:HashMap[WordClasses.WordClass, Double])
+            (str:String, filt:HashSet[WordClasses.WordClass]):(Double, Int, Int) = {
+        val ww = str.replaceAll("i.e.", "").split("[,.\"`;:/&\n –-]")
+        val wl = ww.flatMap(w => 
+            if(w.contains("'") && w.split("'").size == 2){
+                val parts = w.split("'")
+                List((parts(0), lookUpWord(parts(0))), ("'" + parts(1), lookUpWord("'" + parts(1))))
+            }else List((w, lookUpWord(w)))
+        ).filter(_ match{
+            case (w, None) => false
+            case (w, Some((p, wc))) => filt.contains(wc)
+        })
+        (wl.map(x => x._2.get._2).foldLeft(0.0)(
+             (x, e) => x + wcr(e)/wl.size
+        ), wl.size, ww.size)
+    }
 }
 object TextEstimator{
     /**
