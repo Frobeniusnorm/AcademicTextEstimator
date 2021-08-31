@@ -238,11 +238,11 @@ class Gui(db:WordDatabase, wordclassratings:HashMap[WordClasses.WordClass, Doubl
         label_words.setText("found words: " + sol._2.size + "/" + sol._3)
         label_time.setText("computation time: " + (end-start) + "ms")
         label_est.setText("estimation: " + (
-            if(sol._1 > 1.3) "very academical"
-            else if(sol._1 > 1.125) "academical"
+            if(sol._1 > 1.3) "very academic"
+            else if(sol._1 > 1.125) "academic"
             else if(sol._1 > 0.875) "neutral"
-            else if(sol._1 > 0.7) "unacademical"
-            else "very unacademical"
+            else if(sol._1 > 0.7) "unacademic"
+            else "very unacademic"
         ))
 
         btn.setEnabled(true)
@@ -277,11 +277,11 @@ class Gui(db:WordDatabase, wordclassratings:HashMap[WordClasses.WordClass, Doubl
         label_words.setText("found words: " + sol._2 + "/" + sol._3)
         label_time.setText("computation time: " + (end-start) + "ms")
         label_est.setText("estimation: " + (
-            if(sol._1 > 1.3) "very academical"
-            else if(sol._1 > 1.125) "academical"
+            if(sol._1 > 1.3) "very academic"
+            else if(sol._1 > 1.125) "academic"
             else if(sol._1 > 0.875) "neutral"
-            else if(sol._1 > 0.7) "unacademical"
-            else "very unacademical"
+            else if(sol._1 > 0.7) "unacademic"
+            else "very unacademic"
         ))
         tgl.setEnabled(true)
         tgl.repaint()
