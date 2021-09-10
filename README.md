@@ -10,12 +10,19 @@ Currently the program is only able to parse the data from the COCA corpus, i.e. 
 ### Explanation of the UI
 The UI consists of several control and information elements. 
 The red-yellow-green bar shows the academical estimation of the text, were green means academic, yellow neutral and red unacademic. 
-There are two buttons:  and :
-- *"compute"*: investigates every single lexical item and averages their academic *distributional score* and shows them in the statistic on the right.
-- *"compute only word classes"*: reduces every lexical item to its word class. The *distributional score* of the word classes depending on their frequencies will be averages according to the following, precalculated table:
-  **Word class**|Interjections|Pronouns|Adverbs|Conjunctions|Verbs|Nouns|Prepositions|Adjectives|
-  -----------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
-  **Distribution socre**|0.0692|0.47|1.19|1.21|1.25|1.29|1.39|1.55|
+There are two buttons:
+- *"compute"*: investigates every single lexical item and averages their academic *distribution score* and shows them in the statistic on the right.
+- *"compute only word classes"*: reduces every lexical item to its word class. The *distribution score* of the word classes depending on their frequencies will be averages according to the following, precalculated table:
+
+
+  | Interjections | Pronouns | Adverbs | Conjunctions | Verbs | Nouns | Preposition | Adjectives |
+  | --------------- | --------------- | --------------- | --------------- | --------------- | --------------- | --------------- | --------------- |
+  | 0.0692 | 0.47 | 1.19 | 1.21 | 1.25 | 1.29 | 1.39 | 1.55 |
+
+The statistic menu on the right consists of a blue and a purple box and a list:
+- the blue box contains statistic about the text: the academical score (i.e. *distribution score*), the actually looked up words compared to the overall contained lexical items (remeber: not everything this program regards a lexical item is a word, see the regex in the source files for explanation).
+- the purple box contains checkboxes for each word class. This is only relevant for the "compute" option: words from unchecked word classes will *not* be investigated.
+- a word list also only relevant for the "compute" option, containing every found word form and its individual *distribution score*.
 ## Building
 You need the JDK 8 or higher, the Scala Compiler and sbt. Then just clone the project and execute `sbt run` to build and run it.
 If you want to generate executables use the command `assembly` in sbt i.e. `sbt assembly`, the executables will be written to "target/scala-x.y.z/AcademicPaperEstimator-assembly-1.0,jar".
