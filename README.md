@@ -1,6 +1,6 @@
 # AcademicalPaperEstimator
 Project for my linguistic pragmatics seminar.
-A program which uses Corpora data (in this repository a sample of the COCA word frequency list) to rate a given text on how academical it is by its vocabulary.
+A program which uses Corpus data (in this repository a sample of the COCA word frequency list) to rate a given text on how academical it is by its vocabulary.
 ## Use
 You need Java 8 or higher installed on your computer. Then you can either build the project yourself or just use the precompiled jar.
 ### Precompiled Executable
@@ -26,5 +26,5 @@ The statistic menu on the right consists of a blue and a purple box and a list:
 ## Building
 You need the JDK 8 or higher, the Scala Compiler and sbt. Then just clone the project and execute `sbt run` to build and run it.
 If you want to generate executables use the command `assembly` in sbt i.e. `sbt assembly`, the executables will be written to "target/scala-x.y.z/AcademicPaperEstimator-assembly-1.0,jar".
-## Corpora Source
+## Corpus Source
 The used samples from the COCA corpus can be found at https://www.wordfrequency.info/. Huge thank you for providing that information.
