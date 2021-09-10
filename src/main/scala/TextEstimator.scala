@@ -114,4 +114,24 @@ object TextEstimator{
                     }
                 })).removed("")
         )
-}
+    def textsFromFolder(database:WordDatabase)(path:String) : (Int, Int, Int) = 
+        new File(path).listFiles().
+        filter(text => {
+            text.isDirectory || (text.canRead() &&
+            {
+                val parts = text.getName().split("\\.")
+                if(parts.size > 1){
+                    parts(parts.size - 1) == "txt"
+                }else true
+            })
+        }).foldLeft((0,0,0))((o, text) => {
+            val add = if(text.isDirectory()) textsFromFolder(database)(text.getPath) else {
+                try{
+                    import WordClasses._
+                    val foo = database.estimateAcademical(Source.fromFile(text).mkString, HashSet( NOUN, VERB, ADJ))._1
+                    (if(foo<=0.875) 1 else 0, if(foo>0.875&&foo<=1.125) 1 else 0, if(foo>1.125) 1 else 0)
+                }catch{ case _:Exception => (0,0,0)}
+            }
+            (o._1 + add._1, o._2 + add._2, o._3 + add._3)
+        })
+    }
