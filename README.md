@@ -9,6 +9,7 @@ Download the [precompiled.zip](https://github.com/Frobeniusnorm/AcademicTextEsti
 Currently the program is only able to parse the data from the COCA corpus, i.e. it needs the two files `wordForms.csv` (word form list) and `wordFrequency.csv` (lemma list) with those exact names. They are generated from Libre Office Calc and the program expects as seperator char `;` and as decimal seperator `,`. If you have different Corpus data with another format, let me know and i may adapt the parser.
 ### Explanation of the UI
 ![ui-example](docs/screenshot.png)
+
 The UI consists of several control and information elements. 
 The red-yellow-green bar shows the academical estimation of the text, were green means academic, yellow neutral and red unacademic. 
 There are two buttons:
