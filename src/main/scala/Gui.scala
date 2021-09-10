@@ -178,20 +178,30 @@ class Gui(db:WordDatabase, wordclassratings:HashMap[WordClasses.WordClass, Doubl
         btn.setBounds(getWidth()/2 - 93, getHeight() - 75, 100, 30)
         tgl.setBounds(10, getHeight() - 75, 220, 30)
         acd.setBounds(150, 7, getWidth()/2 - 150, 30)
-        acd.repaint()
+        
         rightPanel.setBounds(getWidth()/2 + 20, 7, getWidth()/2 -40, 70)
-        rightPanel.repaint()
+        rightPanel.revalidate();
+
         optPanel.setBounds(getWidth()/2 + 20, 90, getWidth()/2 -40, 90)
         optCont.setBounds(5, 22, getWidth()/2 -50, 70)
-        optCont.repaint()
+       
         if(optCont.getWidth() <= 450){
             optPanel.setBounds(getWidth()/2 + 20, 90, getWidth()/2 -40, 110)
             optCont.setBounds(5, 22, getWidth()/2 -50, 85)
         }
-        optPanel.repaint()
+        optCont.revalidate()
+        subpanel1.revalidate()
+
         wordlistTitle.setBounds(optPanel.getLocation().x, optPanel.getLocation().y + optPanel.getHeight() + 10, 160, 20)
         scrollPane1.setLocation(optPanel.getLocation().x, wordlistTitle.getLocation().y + wordlistTitle.getHeight() + 10)
         scrollPane1.setSize(250, getHeight() - scrollPane1.getLocation().y - 80)
+        scrollPane1.revalidate()
+
+        rightPanel.repaint()
+        acd.repaint()
+        optCont.repaint()
+        optPanel.repaint()
+        area.repaint()
         scrollPane1.repaint()
         repaint()
     }
