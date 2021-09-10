@@ -12,7 +12,7 @@ The UI consists of several control and information elements.
 The red-yellow-green bar shows the academical estimation of the text, were green means academic, yellow neutral and red unacademic. 
 There are two buttons:
 - *"compute"*: investigates every single lexical item and averages their academic *distribution score* and shows them in the statistic on the right.
-- *"compute only word classes"*: reduces every lexical item to its word class. The *distribution score* of the word classes depending on their frequencies will be averages according to the following, precalculated table:
+- *"compute only word classes"*: reduces every lexical item to its word class. The *distribution score* of the word classes depending on their frequencies will be averaged according to the following, precalculated table:
 
 
   | Interjections | Pronouns | Adverbs | Conjunctions | Verbs | Nouns | Preposition | Adjectives |
