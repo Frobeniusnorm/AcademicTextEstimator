@@ -20,7 +20,7 @@ There are two buttons:
   | 0.0692 | 0.47 | 1.19 | 1.21 | 1.25 | 1.29 | 1.39 | 1.55 |
 
 The statistic menu on the right consists of a blue and a purple box and a list:
-- the blue box contains statistic about the text: the academical score (i.e. *distribution score*), the actually looked up words compared to the overall contained lexical items (remeber: not everything this program regards a lexical item is a word, see the regex in the source files for explanation).
+- the blue box contains statistic about the text: the academical score (i.e. *distribution score*), the actually looked up words compared to the overall contained lexical items (remeber: not everything this program regards a lexical item is a word, see the regex in the source files for explanation). The computation time shows the time the estimation of the text took. The first computation will always be significantly slower, because of Just in time compilation and other factors.
 - the purple box contains checkboxes for each word class. This is only relevant for the "compute" option: words from unchecked word classes will *not* be investigated.
 - a word list also only relevant for the "compute" option, containing every found word form and its individual *distribution score*.
 ## Building
