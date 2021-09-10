@@ -2,7 +2,7 @@
 Project for my linguistic pragmatics seminar.
 A program which uses Corpora data (in this repository a sample of the COCA word frequency list) to rate a given text on how academical it is by its vocabulary.
 ## Use
-You need Java 8 or higher installed on your computer. Then you can either build the project or just use the precompiled jar.
+You need Java 8 or higher installed on your computer. Then you can either build the project yourself or just use the precompiled jar.
 ### Precompiled Executable
 Download the [precompiled.zip](https://github.com/Frobeniusnorm/AcademicTextEstimator/raw/main/precompiled.zip) file, unzip it and simply run the included jar file (depending on the os via double click or running `java -jar AcademicPaperEstimator-assembly-1.0.jar`). The jar file requires the two `.csv` files.
 ### Changing the Corpus Data
