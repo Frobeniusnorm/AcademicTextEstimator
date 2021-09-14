@@ -4,7 +4,7 @@ A program which uses Corpus data (in this repository a sample of the COCA word f
 ## Use
 You need Java 8 or higher installed on your computer. Then you can either build the project yourself or just use the precompiled jar.
 ### Precompiled Executable
-Download the [precompiled.zip](https://github.com/Frobeniusnorm/AcademicTextEstimator/raw/main/precompiled.zip) file, unzip it and simply run the included jar file (depending on the os via double click or running `java -jar AcademicPaperEstimator-assembly-1.0.jar`). The jar file requires the two `.csv` files.
+Download the [precompiled.zip](https://github.com/Frobeniusnorm/AcademicTextEstimator/releases/download/v1.1/precompiled.zip) file, unzip it and simply run the included jar file (depending on the os via double click or running `java -jar AcademicPaperEstimator-assembly-1.1.jar`). The jar file requires the two `.csv` files.
 ### Changing the Corpus Data
 Currently the program is only able to parse the data from the COCA corpus, i.e. it needs the two files `wordForms.csv` (word form list) and `wordFrequency.csv` (lemma list) with those exact names. They are generated from Libre Office Calc and the program expects as seperator char `;` and as decimal seperator `,`. If you have different Corpus data with another format, let me know and i may adapt the parser.
 ### Explanation of the UI
