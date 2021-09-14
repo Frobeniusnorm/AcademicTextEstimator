@@ -27,6 +27,6 @@ The statistic menu on the right consists of a blue and a purple box and a list:
 - a word list also only relevant for the "compute" option, containing every found word form and its individual *distribution score*.
 ## Building
 You need the JDK 8 or higher, the Scala Compiler and sbt. Then just clone the project and execute `sbt run` to build and run it.
-If you want to generate executables use the command `assembly` in sbt i.e. `sbt assembly`, the executables will be written to "target/scala-x.y.z/AcademicPaperEstimator-assembly-1.0,jar".
+If you want to generate executables use the command `assembly` in sbt i.e. `sbt assembly`, the executables will be written to "target/scala-x.y.z/AcademicPaperEstimator-assembly-1.0.jar".
 ## Corpus Source
 The used samples from the COCA corpus can be found at https://www.wordfrequency.info/. Huge thanks for providing that information.
